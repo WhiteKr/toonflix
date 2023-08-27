@@ -41,45 +41,89 @@ class _DetailScreenState extends State<DetailScreen> {
           style: const TextStyle(fontSize: 24),
         ),
       ),
-      body: Column(
-        children: [
-          const SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(50),
+          child: Column(
             children: [
-              Hero(
-                tag: widget.webtoon.id,
-                child: WebtoonThumbnail(widget.webtoon.thumb),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: widget.webtoon.id,
+                    child: WebtoonThumbnail(widget.webtoon.thumb),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              FutureBuilder(
+                future: webtoon,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          snapshot.data!.about,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          '${snapshot.data!.genre} / ${snapshot.data!.age}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    );
+                  }
+                  return const Text('...');
+                },
+              ),
+              const SizedBox(height: 50),
+              FutureBuilder(
+                future: episodes,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        for (var episode in snapshot.data!)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade400,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    episode.title,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }
+                  return Container();
+                },
               ),
             ],
           ),
-          const SizedBox(height: 25),
-          FutureBuilder(
-            future: webtoon,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        snapshot.data!.about,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        '${snapshot.data!.genre} / ${snapshot.data!.age}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return const Text('...');
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
